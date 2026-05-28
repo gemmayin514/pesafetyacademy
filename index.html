@@ -4,34 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>포스코이앤씨 Safety Academy</title>
-    <!-- Google Fonts 'Noto Sans KR' 임포트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* [디자인 조건] CSS 변수 관리 */
         :root {
-            --primary-color: #BFDAF7;   /* 따뜻한 하늘 계열 */
-            --bg-color: #FFF8F0;        /* 크림/아이보리 배경 */
-            --accent-color: #5C3D2E;    /* 진한 브라운 악센트 */
+            --primary-color: #BFDAF7;   
+            --bg-color: #FFF8F0;        
+            --accent-color: #5C3D2E;    
             --card-bg: #FFFFFF;
             --text-color: #222222;
             --border-color: #EADBC8;
-            --weekend-color: #FF0000;   /* 주말 및 공휴일 빨간색 */
+            --weekend-color: #FF0000;   
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); padding: 40px 20px; line-height: 1.5; }
-        
-        /* 레이아웃 조건 (max-width: 1200px, 가운데 정렬) */
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
-        
-        /* ① 헤더 영역 */
         header { text-align: center; margin-bottom: 10px; }
         header h1 { font-size: 2.8rem; font-weight: 900; color: var(--accent-color); letter-spacing: -1px; margin-bottom: 5px; }
         header p { font-size: 1.1rem; color: #666; font-weight: 400; }
 
-        /* 상단 네비게이션 & 도구 바 */
         .toolbar { 
             display: flex; 
             justify-content: space-between; 
@@ -50,7 +43,6 @@
         .btn-export { background-color: #4A90E2; color: white; border: none; padding: 12px 22px; font-size: 0.95rem; font-weight: 700; border-radius: 8px; cursor: pointer; }
         .btn-export:hover { background-color: #357ABD; }
 
-        /* ② 캘린더 영역 (한 화면에 단 1개 월만 그리드로 큼직하게 표기) */
         .calendar-box { background: var(--card-bg); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); box-shadow: 0 6px 18px rgba(0,0,0,0.02); }
         .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #eee; border-left: 1px solid #eee; }
         
@@ -64,14 +56,12 @@
         .day-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
         .day-number { font-size: 1.1rem; font-weight: 700; color: #333; }
         
-        /* 주말 및 공휴일 색상 조건 명시 */
         .day-cell.sunday .day-number, 
         .day-cell.saturday .day-number, 
         .day-cell.holiday .day-number { color: var(--weekend-color); }
         
         .holiday-label { font-size: 0.75rem; font-weight: 700; color: var(--weekend-color); background-color: #ffebeb; padding: 1px 5px; border-radius: 4px; }
 
-        /* 일자별 교육 상세 정보 표시 박스 (교육명 + 대상 + 장소) */
         .event-container { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex-grow: 1; }
         .event-badge { 
             padding: 6px 8px; 
@@ -87,7 +77,6 @@
         .event-badge .info-title { font-size: 0.82rem; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .event-badge .info-text { font-size: 0.75rem; font-weight: 400; color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* 세부 정보 모달 팝업 */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.2s; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-content { background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 500px; border-top: 8px solid var(--accent-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
@@ -102,20 +91,17 @@
         .btn-delete { background: #d9534f; color: white; margin-right: auto; }
         .btn-cancel { background: #eee; color: #555; }
         
-        /* 추출 데이터 영역 */
         #exportArea { width: 100%; height: 180px; font-family: monospace; font-size: 0.75rem; padding: 10px; margin-top: 10px; border: 1px solid var(--border-color); background: #fafafa; border-radius: 6px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- ① 헤더 영역 -->
     <header>
         <h1>포스코이앤씨 Safety Academy</h1>
         <p>종합 안전 교육 통합 연간 일정 대시보드</p>
     </header>
     
     <div class="toolbar">
-        <!-- 공유 데이터 추출 단추 -->
         <button class="btn-export" onclick="openExportModal()">⚙️ 최종 반영 코드 추출</button>
         
         <div class="month-nav">
@@ -123,16 +109,14 @@
             <div class="current-month-display" id="currentMonthTxt">5월</div>
             <button class="btn-nav" onclick="changeMonth(1)">다음 달 ▶</button>
         </div>
-        <div style="width:170px;"></div> <!-- 정중앙 밸런싱용 더미 공백 -->
+        <div style="width:170px;"></div> 
     </div>
     
-    <!-- ② 캘린더 영역 -->
     <div class="calendar-box">
         <div class="days-grid" id="calendarDaysGrid"></div>
     </div>
 </div>
 
-<!-- 세부 정보 / 개별 수정 팝업 모달 -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
         <div class="modal-header">
@@ -156,7 +140,6 @@
     </div>
 </div>
 
-<!-- 반영 코드 저장 팝업 모달 -->
 <div class="modal-overlay" id="exportModal">
     <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header">
@@ -173,10 +156,9 @@
 </div>
 
 <script>
-    let currentRenderMonth = 5; // 오늘 날짜인 5월 달력 1개만 단독 표출
+    let currentRenderMonth = 5; 
     const currentRenderYear = 2026;
     
-    // 원본 교육 일정표 전체 리스트
     const academyEvents = [
         {name:"관리감독자", start:"2026-03-04", end:"2026-03-05", target:"AS섹션 맞춤", degree:"1차", loc:"CC 204호"},
         {name:"관리감독자", start:"2026-03-11", end:"2026-03-12", target:"AS섹션 맞춤", degree:"2차", loc:"CC 201호"},
@@ -264,7 +246,7 @@
         {name:"안전관리자", start:"2026-11-04", end:"2026-11-06", target:"SA", degree:"12차", loc:"LC"},
         {name:"관리감독자", start:"2026-11-09", end:"2026-11-10", target:"CAE&기타", degree:"31차", loc:"LC"},
         {name:"관리감독자", start:"2026-11-10", end:"2026-11-11", target:"CAE&기타", degree:"32차", loc:"LC"},
-        {name:"보건관리자", start:"2026-11-11", end:"2026-11-13", target:"HA", degree:"3차", loc:"LC"},
+        {name:"보건관리자", start:"2026-11-11", Facing_time: "2026-11-13", target:"HA", degree:"3차", loc:"LC"},
         {name:"관리감독자", start:"2026-11-16", end:"2026-11-17", target:"CAE&기타", degree:"33차", loc:"LC"},
         {name:"관리감독자", start:"2026-11-17", end:"2026-11-18", target:"CAE&기타", degree:"34차", loc:"LC"},
         {name:"관리감독자", start:"2026-11-23", end:"2026-11-24", target:"CAE&기타", degree:"35차", loc:"LC"},
@@ -276,7 +258,6 @@
         {name:"관리감독자", start:"2026-12-10", end:"2026-12-11", target:"CAE&기타", degree:"40차", loc:"LC"}
     ];
 
-    // 대한민국 공휴일 목록
     const holidays2026 = {
         "01-01": "신정", "02-16": "설날 연휴", "02-17": "설날", "02-18": "설날 연휴", "03-01": "삼일절", "03-02": "대체공휴일",
         "05-05": "어린이날", "05-24": "석가탄신일", "05-25": "대체공휴일", "06-06": "현충일", "08-15": "광복절", "08-17": "대체공휴일",
@@ -284,7 +265,6 @@
     };
 
     function initData() {
-        // 무조건 깃허브 코드에 있는 최신 일정을 최우선으로 화면에 뿌립니다.
         window.liveEvents = JSON.parse(JSON.stringify(academyEvents));
         localStorage.setItem('posco_academy_schedules', JSON.stringify(window.liveEvents));
     }
@@ -360,17 +340,27 @@
             dayEvents.forEach(ev => {
                 const evBox = document.createElement('div');
                 evBox.className = 'event-badge';
-                // ★ 캘린더 화면 자체에 [교육명 + 대상 + 장소]를 수직으로 노출
                 evBox.innerHTML = `
                     <div class="info-title">${ev.name} (${ev.degree})</div>
                     <div class="info-text">🎯 대상: ${ev.target || '전체'}</div>
                     <div class="info-text">📍 장소: ${ev.loc || '미정'}</div>
                 `;
+                
+                // 개별 배지(카드) 클릭 시 해당 교육만 팝업 연동 수정 완료
+                evBox.onclick = (e) => {
+                    e.stopPropagation(); 
+                    openDetails(fullDateStr, [ev]); 
+                };
+                
                 eventsContainer.appendChild(evBox);
             });
             cell.appendChild(eventsContainer);
 
-            cell.onclick = () => openDetails(fullDateStr, dayEvents);
+            cell.onclick = (e) => {
+                if (e.target.closest('.event-badge')) return; 
+                openDetails(fullDateStr, []); 
+            };
+            
             grid.appendChild(cell);
         }
     }
