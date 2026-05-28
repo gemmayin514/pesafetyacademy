@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포스코이앤씨 Safety Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 디자인 조건 및 CSS 변수 설정 */
+        :root {
+            --primary-color: #FF6B35;       /* 따뜻한 오렌지/코랄 */
+            --bg-color: #FFF8F0;            /* 크림/아이보리 */
+            --accent-color: #5C3D2E;        /* 진한 브라운 */
+            --card-bg: #FFFFFF;
+            --text-color: #222222;
+            --border-color: #EADBC8;
+            --holiday-color: #D9534F;
+            --sat-color: #3175D0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 30px 20px;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1400px; /* 전체 모니터 화면을 넓게 활용 */
+            margin: 0 auto;
+        }
+
+        /* ① 헤더 영역 */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.6rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* ③ 공유 및 월 이동 컨트롤러 툴바 */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 15px 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(92, 61, 46, 0.06);
+        }
+
+        /* 월 선택 네비게이터 */
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-nav {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-nav:hover {
+            opacity: 0.9;
+        }
+
+        .current-month-display {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .btn-share {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-share:hover {
+            background-color: #e55a2b;
+        }
+
+        /* ② 단일 대형 캘린더 구역 */
+        .single-calendar-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(92, 61, 46, 0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        /* 달력 그리드 구조 (요일 7열 고정) */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border-left: 1px solid #f0e6da;
+            border-top: 1px solid #f0e6da;
+        }
+
+        .weekdays {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #555;
+            padding: 15px 0;
+            background-color: #fffbf7;
+            text-align: center;
+            border-right: 1px solid #f0e6da;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        /* 날짜 한 칸의 크기를 대폭 늘려 내부에 글자가 잘 보이도록 조절 */
+        .day-cell {
+            min-height: 140px; /* 고정 크기를 늘려 정보가 넉넉히 들어감 */
+            padding: 8px;
+            background: #fff;
+            border-right: 1px solid #f0e6da;
+            border-bottom: 1px solid #f0e6da;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: background 0.15s;
+        }
+
+        .day-cell:hover {
+            background-color: var(--bg-color);
+        }
+
+        .day-cell.empty {
+            background-color: #fafaf8;
+            cursor: default;
+        }
+
+        .day-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .day-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* 주말 및 공휴일 색상 정의 */
+        .day-cell:nth-child(7n+1) .day-number { color: var(--holiday-color); } /* 일요일 */
+        .day-cell:nth-child(7n) .day-number { color: var(--sat-color); }     /* 토요일 */
+        .day-cell.holiday .day-number { color: var(--holiday-color); }
+
+        .holiday-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--holiday-color);
+            background-color: #fdeeed;
+            padding: 2px 6px;
+            border-radius: 4px;
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ★ 핵심 변경사항: 일자 내부 정보 상자 스타일 */
+        .day-events-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .inline-event-item {
+            font-size: 0.78rem;
+            padding: 5px 8px;
+            border-radius: 6px;
+            background-color: #fff2ec; /* 연한 오렌지 배경 */
+            border-left: 4px solid var(--primary-color);
+            color: #333;
+            font-weight: 500;
+            line-height: 1.3;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .event-title-line {
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 1px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .event-desc-line {
+            color: #555;
+            font-size: 0.72rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* 모달 팝업 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+            border-top: 8px solid var(--primary-color);
+        }
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .close-modal {
+            cursor: pointer;
+            color: #aaa;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #444;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .btn {
+            padding: 12px 22px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .btn-save { background: var(--primary-color); color: white; }
+        .btn-cancel { background: #eee; color: #555; }
+        .btn-delete { background: #d9534f; color: white; margin-right: auto; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>포스코이앤씨 Safety Academy</h1>
+        <p>종합 안전 교육 통합 연간 일정 대시보드</p>
+    </header>
+
+    <div class="toolbar">
+        <div class="month-nav">
+            <button class="btn-nav" onclick="changeMonth(-1)">◀ 이전 달</button>
+            <div class="current-month-display" id="currentMonthTxt">3월</div>
+            <button class="btn-nav" onclick="changeMonth(1)">다음 달 ▶</button>
+        </div>
+        <button class="btn-share" onclick="copyShareUrl()">🔗 현재 상태 URL 복사 (공유용)</button>
+    </div>
+
+    <div class="single-calendar-container">
+        <div class="days-grid" id="calendarDaysGrid"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="modalTitle">일정 상세/수정</span>
+            <span class="close-modal" onclick="closeModal()">✕</span>
+        </div>
+        <input type="hidden" id="editDate">
+        <input type="hidden" id="editIndex">
+        <div class="form-group">
+            <label>교육명</label>
+            <input type="text" id="formTitle">
+        </div>
+        <div class="form-group">
+            <label>대상</label>
+            <input type="text" id="formTarget">
+        </div>
+        <div class="form-group">
+            <label>차수</label>
+            <input type="text" id="formDegree">
+        </div>
+        <div class="form-group">
+            <label>장소</label>
+            <input type="text" id="formLocation">
+        </div>
+        <div class="form-group">
+            <label>기간 (시작일 ~ 종료일 자동연동)</label>
+            <div style="display:flex; gap:10px;">
+                <input type="date" id="formStart" readonly>
+                <input type="date" id="formEnd" readonly>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-delete" onclick="deleteEvent()">삭제</button>
+            <button class="btn btn-cancel" onclick="closeModal()">취소</button>
+            <button class="btn btn-save" onclick="saveEvent()">저장 및 반영</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 현재 사용자가 보고 있는 월 상태 관리 변수 (기본 첫 교육이 있는 3월로 세팅)
+    let currentRenderMonth = 3; 
+    const currentRenderYear = 2026;
+
+    // 2026년 대한민국 공휴일 데이터
+    const holidays2026 = {
+        "01-01": "신정",
+        "02-16": "설날 연휴", "02-17": "설날", "02-18": "설날 연휴",
+        "03-01": "삼일절", "03-02": "대체공휴일",
+        "05-05": "어린이날", "05-24": "석가탄신일", "05-25": "대체공휴일",
+        "06-06": "현충일",
+        "08-15": "광복절", "08-17": "대체공휴일",
+        "09-24": "추석 연휴", "09-25": "추석", "09-26": "추석 연휴",
+        "10-03": "개천절", "10-05": "대체공휴일", "10-09": "한글날",
+        "12-25": "크리스마스"
+    };
+
+    // 원본 연간 교육 일정 표 데이터
+    const rawEvents = [
+        {name:"관리감독자", start:"2026-03-04", end:"2026-03-05", target:"AS섹션 맞춤", degree:"1차", loc:"CC 204호"},
+        {name:"관리감독자", start:"2026-03-11", end:"2026-03-12", target:"AS섹션 맞춤", degree:"2차", loc:"CC 201호"},
+        {name:"책임자", start:"2026-04-06", end:"2026-04-06", target:"PM", degree:"1차", loc:"사옥 소통관"},
+        {name:"책임자", start:"2026-04-07", end:"2026-04-07", target:"PM", degree:"2차", loc:"사옥 소통관"},
+        {name:"책임자", start:"2026-04-10", end:"2026-04-10", target:"PM", degree:"3차", loc:"사옥 소통관"},
+        {name:"안전관리자", start:"2026-04-13", end:"2026-04-13", target:"SAM1", degree:"1-1차", loc:"사옥 소통관"},
+        {name:"안전관리자", start:"2026-04-14", end:"2026-04-14", target:"SAM1", degree:"1-2차", loc:"사옥 소통관"},
+        {name:"안전관리자", start:"2026-04-16", end:"2026-04-16", target:"SAM1", degree:"1-3차", loc:"사옥 소통관"},
+        {name:"책임자", start:"2026-04-21", end:"2026-04-21", target:"PM", degree:"4차", loc:"경상(반월당역)"},
+        {name:"안전관리자", start:"2026-04-27", end:"2026-04-27", target:"SAM1", degree:"1-4차", loc:"사옥 소통관"},
+        {name:"안전관리자", start:"2026-04-28", end:"2026-04-28", target:"SAM1", degree:"1-5차", loc:"사옥 소통관"},
+        {name:"안전관리자", start:"2026-04-29", end:"2026-04-29", target:"SAM1", degree:"1-6차", loc:"사옥 소통관"},
+        {name:"책임자", start:"2026-05-12", end:"2026-05-12", target:"PM", degree:"5차", loc:"사옥 소통관"},
+        {name:"안전관리자", start:"2026-05-18", end:"2026-05-19", target:"SAM추가", degree:"1차", loc:"사옥 창의관"},
+        {name:"안전관리자", start:"2026-05-20", end:"2026-05-21", target:"SAM추가", degree:"2차", loc:"사옥 창의&미래관"},
+        {name:"관리감독자", start:"2026-05-26", end:"2026-05-27", target:"CE", degree:"7차", loc:"CC 202호"},
+        {name:"관리감독자", start:"2026-05-27", end:"2026-05-28", target:"CE", degree:"8차", loc:"CC 201호"},
+        {name:"관리감독자", start:"2026-05-28", end:"2026-05-29", target:"CE", degree:"9차", loc:"CC 202호"},
+        {name:"관리감독자", start:"2026-06-01", end:"2026-06-02", target:"CE", degree:"10차", loc:"CC 204호"},
+        {name:"관리감독자", start:"2026-06-04", end:"2026-06-05", target:"CE", degree:"11차", loc:"CC 204호"},
+        {name:"안전관리자", start:"2026-06-05", end:"2026-06-05", target:"SAM2", degree:"1차", loc:"사옥 소통관"},
+        {name:"협력사 책임자", start:"2026-06-15", end:"2026-06-15", target:"협력사 경영층", degree:"1차", loc:"LC"},
+        {name:"관리감독자", start:"2026-06-16", end:"2026-06-17", target:"CE", degree:"15차", loc:"LC 103호"},
+        {name:"안전관리자", start:"2026-06-16", end:"2026-06-16", target:"SAM2", degree:"2차", loc:"사옥 창의관"},
+        {name:"관리감독자", start:"2026-06-17", end:"2026-06-18", target:"CE", degree:"16차", loc:"정보없음"},
+        {name:"관리감독자", start:"2026-06-18", end:"2026-06-19", target:"CE", degree:"17차", loc:"LC 103호"},
+        {name:"협력사 책임자", start:"2026-06-22", end:"2026-06-22", target:"협력사 경영층", degree:"2차", loc:"LC"},
+        {name:"관리감독자", start:"2026-06-23", end:"2026-06-24", target:"CE", degree:"18차", loc:"LC 102호"},
+        {name:"안전관리자", start:"2026-06-24", end:"2026-06-24", target:"SAM2", degree:"3차", loc:"사옥 소통관"},
+        {name:"관리감독자", start:"2026-06-25", end:"2026-06-26", target:"CE", degree:"19차", loc:"LC 103호"},
+        {name:"안전관리자", start:"2026-06-25", end:"2026-06-25", target:"SAM2", degree:"4차", loc:"사옥 소통관"},
+        {name:"관리감독자", start:"2026-06-29", end:"2026-06-30", target:"CAE&기타", degree:"1차", loc:"LC 103호"},
+        {name:"관리감독자", start:"2026-06-30", end:"2026-07-01", target:"CAE&기타", degree:"2차", loc:"LC"},
+        {name:"안전관리자", start:"2026-07-01", end:"2026-07-03", target:"SA", degree:"1차", loc:"LC 103호"},
+        {name:"관리감독자", start:"2026-07-06", end:"2026-07-07", target:"CAE&기타", degree:"3차", loc:"CC 204호(신청)"},
+        {name:"관리감독자", start:"2026-07-07", end:"2026-07-08", target:"CAE&기타", degree:"4차", loc:"CC 204호(신청)"},
+        {name:"안전관리자", start:"2026-07-08", end:"2026-07-10", target:"SA", degree:"2차", loc:"사옥(7.8)&체험장(7.9-10)"},
+        {name:"관리감독자", start:"2026-07-13", end:"2026-07-14", target:"CAE&기타", degree:"5차", loc:"LC 101호"},
+        {name:"안전관리자", start:"2026-07-14", end:"2026-07-16", target:"SA", degree:"3차", loc:"LC 103호"},
+        {name:"관리감독자", start:"2026-07-14", end:"2026-07-15", target:"CAE&기타", degree:"6차", loc:"LC 103호"},
+        {name:"관리감독자", start:"2026-07-20", end:"2026-07-21", target:"CAE&기타", degree:"7차", loc:"LC 103호(7.20)&LC 101호(7.21)"},
+        {name:"관리감독자", start:"2026-07-21", end:"2026-07-22", target:"CAE&기타", degree:"8차", loc:"LC 202호(신청)"},
+        {name:"안전관리자", start:"2026-07-22", end:"2026-07-24", target:"SA", degree:"4차", loc:"LC 202호(신청)"},
+        {name:"관리감독자", start:"2026-07-27", end:"2026-07-28", target:"CAE&기타", degree:"9차", loc:"LC"},
+        {name:"관리감독자", start:"2026-07-28", end:"2026-07-29", target:"CAE&기타", degree:"10차", loc:"LC"},
+        {name:"보건관리자", start:"2026-07-29", end:"2026-07-31", target:"HA", degree:"1차", loc:"LC"},
+        {name:"관리감독자", start:"2026-08-04", end:"2026-08-05", target:"CAE&기타", degree:"11차", loc:"LC"},
+        {name:"안전관리자", start:"2026-08-05", end:"2026-08-05", target:"SAM3", degree:"1-1차", loc:"사옥"},
+        {name:"관리감독자", start:"2026-08-06", end:"2026-08-07", target:"CAE&기타", degree:"12차", loc:"LC"},
+        {name:"안전관리자", start:"2026-08-07", end:"2026-08-07", target:"SAM3", degree:"1-2차", loc:"사옥"},
+        {name:"관리감독자", start:"2026-08-11", end:"2026-08-12", target:"CAE&기타", degree:"13차", loc:"LC"},
+        {name:"안전관리자", start:"2026-08-12", end:"2026-08-12", target:"SAM3", degree:"1-3차", loc:"사옥"},
+        {name:"관리감독자", start:"2026-08-13", end:"2026-08-14", target:"CAE&기타", degree:"14차", loc:"LC"},
+        {name:"관리감독자", start:"2026-08-18", end:"2026-08-19", target:"CAE&기타", degree:"15차", loc:"LC"},
+        {name:"안전관리자", start:"2026-08-19", end:"2026-08-19", target:"SAM3", degree:"1-5차", loc:"사옥"},
+        {name:"관리감독자", start:"2026-08-20", end:"2026-08-21", target:"CAE&기타", degree:"16차", loc:"LC"},
+        {name:"관리감독자", start:"2026-08-24", end:"2026-08-25", target:"CAE&기타", degree:"17차", loc:"LC"},
+        {name:"관리감독자", start:"2026-08-25", end:"2026-08-26", target:"CAE&기타", degree:"18차", loc:"LC"},
+        {name:"안전관리자", start:"2026-08-26", end:"2026-08-28", target:"SA", degree:"5차", loc:"LC"},
+        {name:"관리감독자", start:"2026-09-01", end:"2026-09-02", target:"CAE&기타", degree:"19차", loc:"LC"},
+        {name:"관리감독자", start:"2026-09-03", end:"2026-09-04", target:"CAE&기타", degree:"20차", loc:"LC"},
+        {name:"협력사 관리감독자", start:"2026-09-03", end:"2026-09-03", target:"협력사 안전담당자", degree:"1차", loc:"경상(동대구역)"},
+        {name:"관리감독자", start:"2026-09-07", end:"2026-09-08", target:"CAE&기타", degree:"21차", loc:"LC"},
+        {name:"관리감독자", start:"2026-09-08", end:"2026-09-09", target:"CAE&기타", degree:"22차", loc:"LC"},
+        {name:"관리감독자", start:"2026-09-10", end:"2026-09-11", target:"CAE&기타", degree:"23차", loc:"LC"},
+        {name:"협력사 관리감독자", start:"2026-09-10", end:"2026-09-10", target:"협력사 안전담당자", degree:"2차", loc:"LC"},
+        {name:"관리감독자", start:"2026-09-14", end:"2026-09-15", target:"CAE&기타", degree:"24차", loc:"LC"},
+        {name:"관리감독자", start:"2026-09-15", end:"2026-09-16", target:"CAE&기타", degree:"25차", loc:"LC"},
+        {name:"관리감독자", start:"2026-09-17", end:"2026-09-18", target:"CAE&기타", degree:"26차", loc:"LC"},
+        {name:"협력사 관리감독자", start:"2026-09-17", end:"2026-09-17", target:"협력사 안전담당자", degree:"3차", loc:"LC"},
+        {name:"보건관리자", start:"2026-09-28", end:"2026-09-30", target:"HA", degree:"2차", loc:"LC"},
+        {name:"관리감독자", start:"2026-09-28", end:"2026-09-29", target:"CAE&기타", degree:"27차", loc:"LC"},
+        {name:"관리감독자", start:"2026-10-01", end:"2026-10-02", target:"CAE&기타", degree:"28차", loc:"LC"},
+        {name:"안전관리자", start:"2026-10-06", end:"2026-10-08", target:"SA", degree:"6차", loc:"LC"},
+        {name:"안전관리자", start:"2026-10-12", end:"2026-10-14", target:"SA", degree:"7차", loc:"LC"},
+        {name:"안전관리자", start:"2026-10-14", end:"2026-10-16", target:"SA", degree:"8차", loc:"LC"},
+        {name:"협력사 책임자", start:"2026-10-15", end:"2026-10-15", target:"협력사 경영층", degree:"3차", loc:"LC"},
+        {name:"안전관리자", start:"2026-10-19", end:"2026-10-21", target:"SA", degree:"9차", loc:"LC"},
+        {name:"안전관리자", start:"2026-10-21", end:"2026-10-23", target:"SA", degree:"10차", loc:"LC"},
+        {name:"협력사 책임자", start:"2026-10-22", end:"2026-10-22", target:"협력사 경영층", degree:"4차", loc:"LC"},
+        {name:"안전관리자", start:"2026-10-26", end:"2026-10-28", target:"SA", degree:"11차", loc:"LC"},
+        {name:"관리감독자", start:"2026-11-02", end:"2026-11-03", target:"CAE&기타", degree:"29차", loc:"LC"},
+        {name:"관리감독자", start:"2026-11-03", end:"2026-11-04", target:"CAE&기타", degree:"30차", loc:"LC"},
+        {name:"안전관리자", start:"2026-11-04", end:"2026-11-06", target:"SA", degree:"12차", loc:"LC"},
+        {name:"관리감독자", start:"2026-11-09", end:"2026-11-10", target:"CAE&기타", degree:"31차", loc:"LC"},
+        {name:"관리감독자", start:"2026-11-10", end:"2026-11-11", target:"CAE&기타", degree:"32차", loc:"LC"},
+        {name:"보건관리자", start:"2026-11-11", stroke:"2026-11-13", target:"HA", degree:"3차", loc:"LC"},
+        {name:"관리감독자", start:"2026-11-16", end:"2026-11-17", target:"CAE&기타", degree:"33차", loc:"LC"},
+        {name:"관리감독자", start:"2026-11-17", end:"2026-11-18", target:"CAE&기타", degree:"34차", loc:"LC"},
+        {name:"관리감독자", start:"2026-11-23", end:"2026-11-24", target:"CAE&기타", degree:"35차", loc:"LC"},
+        {name:"관리감독자", start:"2026-11-24", end:"2026-11-25", target:"CAE&기타", degree:"36차", loc:"LC"},
+        {name:"안전관리자", start:"2026-11-25", end:"2026-11-27", target:"SA", degree:"13차", loc:"LC"},
+        {name:"관리감독자", start:"2026-12-01", end:"2026-12-02", target:"CAE&기타", degree:"37차", loc:"LC"},
+        {name:"관리감독자", start:"2026-12-03", end:"2026-12-04", target:"CAE&기타", degree:"38차", loc:"LC"},
+        {name:"관리감독자", start:"2026-12-08", end:"2026-12-09", target:"CAE&기타", degree:"39차", loc:"LC"},
+        {name:"관리감독자", start:"2026-12-10", end:"2026-12-11", target:"CAE&기타", degree:"40차", loc:"LC"}
+    ];
+
+    let academyEvents = [];
+
+    function initData() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedData = urlParams.get('d');
+        
+        if (sharedData) {
+            try {
+                academyEvents = JSON.parse(decodeURIComponent(atob(sharedData)));
+                localStorage.setItem('safety_academy_events', JSON.stringify(academyEvents));
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } catch(e) {
+                console.error("공유 데이터 로드 실패", e);
+                loadFromLocalStorage();
+            }
+        } else {
+            loadFromLocalStorage();
+        }
+    }
+
+    function loadFromLocalStorage() {
+        const localData = localStorage.getItem('safety_academy_events');
+        if (localData) {
+            academyEvents = JSON.parse(localData);
+        } else {
+            academyEvents = JSON.parse(JSON.stringify(rawEvents));
+            localStorage.setItem('safety_academy_events', JSON.stringify(academyEvents));
+        }
+    }
+
+    function getEventsForDate(dateStr) {
+        return academyEvents.filter(ev => {
+            return dateStr >= ev.start && dateStr <= ev.end;
+        });
+    }
+
+    // 월 이동 기능 컨트롤러
+    function changeMonth(direction) {
+        currentRenderMonth += direction;
+        if (currentRenderMonth < 1) currentRenderMonth = 12;
+        if (currentRenderMonth > 12) currentRenderMonth = 1;
+        renderSingleMonth();
+    }
+
+    // ★ 단일 한 달 달력 렌더링 함수
+    function renderSingleMonth() {
+        document.getElementById('currentMonthTxt').innerText = `${currentRenderMonth}월`;
+        const grid = document.getElementById('calendarDaysGrid');
+        grid.innerHTML = '';
+
+        // 요일 헤더 매칭
+        const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+        weekdays.forEach(wd => {
+            const wdDiv = document.createElement('div');
+            wdDiv.className = 'weekdays';
+            wdDiv.innerText = wd;
+            grid.appendChild(wdDiv);
+        });
+
+        const firstDay = new Date(currentRenderYear, currentRenderMonth - 1, 1).getDay();
+        const totalDays = new Date(currentRenderYear, currentRenderMonth, 0).getDate();
+
+        // 첫 주 빈칸 채우기
+        for (let i = 0; i < firstDay; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'day-cell empty';
+            grid.appendChild(emptyCell);
+        }
+
+        // 일자별 배치 루프
+        for (let day = 1; day <= totalDays; day++) {
+            const cell = document.createElement('div');
+            cell.className = 'day-cell';
+            
+            const headerRow = document.createElement('div');
+            headerRow.className = 'day-header-row';
+
+            const dayNum = document.createElement('div');
+            dayNum.className = 'day-number';
+            dayNum.innerText = day;
+            headerRow.appendChild(dayNum);
+
+            const mm = String(currentRenderMonth).padStart(2, '0');
+            const dd = String(day).padStart(2, '0');
+            const fullDateStr = `${currentRenderYear}-${mm}-${dd}`;
+            const mdStr = `${mm}-${dd}`;
+
+            // 공휴일 라벨 매칭
+            if (holidays2026[mdStr]) {
+                cell.classList.add('holiday');
+                const hlName = document.createElement('div');
+                hlName.className = 'holiday-name';
+                hlName.innerText = holidays2026[mdStr];
+                headerRow.appendChild(hlName);
+            }
+            cell.appendChild(headerRow);
+
+            // ★ 일자별 내부 텍스트 박스 컨테이너 ("교육명/대상/장소" 표기)
+            const eventsContainer = document.createElement('div');
+            eventsContainer.className = 'day-events-container';
+
+            const dayEvents = getEventsForDate(fullDateStr);
+            dayEvents.forEach(ev => {
+                const evBox = document.createElement('div');
+                evBox.className = 'inline-event-item';
+                
+                // 줄바꿈/가독성을 고려해 배치 구조화
+                evBox.innerHTML = `
+                    <div class="event-title-line">${ev.name} (${ev.degree})</div>
+                    <div class="event-desc-line">🎯 ${ev.target || '전체'}</div>
+                    <div class="event-desc-line">📍 ${ev.loc || '미정'}</div>
+                `;
+                eventsContainer.appendChild(evBox);
+            });
+            cell.appendChild(eventsContainer);
+
+            // 셀 클릭 이벤트 바인딩 (수정창)
+            cell.onclick = () => openDetails(fullDateStr, dayEvents);
+            grid.appendChild(cell);
+        }
+    }
+
+    // 상세조회 및 모달 오픈
+    function openDetails(dateStr, events) {
+        document.getElementById('editDate').value = dateStr;
+        const overlay = document.getElementById('modalOverlay');
+        
+        if (events.length > 0) {
+            const ev = events[0];
+            const globalIdx = academyEvents.findIndex(e => e.start === ev.start && e.end === ev.end && e.degree === ev.degree && e.name === ev.name);
+            
+            document.getElementById('editIndex').value = globalIdx;
+            document.getElementById('modalTitle').innerText = `📅 ${dateStr} 일정 상세/수정`;
+            document.getElementById('formTitle').value = ev.name;
+            document.getElementById('formTarget').value = ev.target;
+            document.getElementById('formDegree').value = ev.degree;
+            document.getElementById('formLocation').value = ev.loc;
+            document.getElementById('formStart').value = ev.start;
+            document.getElementById('formEnd').value = ev.end;
+        } else {
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('modalTitle').innerText = `📅 ${dateStr} 신규 일정 등록`;
+            document.getElementById('formTitle').value = "";
+            document.getElementById('formTarget').value = "";
+            document.getElementById('formDegree').value = "";
+            document.getElementById('formLocation').value = "";
+            document.getElementById('formStart').value = dateStr;
+            document.getElementById('formEnd').value = dateStr;
+        }
+        
+        overlay.classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    // 저장 처리
+    function saveEvent() {
+        const idx = parseInt(document.getElementById('editIndex').value);
+        const eventData = {
+            name: document.getElementById('formTitle').value.trim(),
+            target: document.getElementById('formTarget').value.trim(),
+            degree: document.getElementById('formDegree').value.trim(),
+            loc: document.getElementById('formLocation').value.trim(),
+            start: document.getElementById('formStart').value,
+            end: document.getElementById('formEnd').value
+        };
+
+        if(!eventData.name) {
+            alert("교육명을 입력하세요.");
+            return;
+        }
+
+        if (idx >= 0) {
+            academyEvents[idx] = eventData;
+        } else {
+            academyEvents.push(eventData);
+        }
+
+        localStorage.setItem('safety_academy_events', JSON.stringify(academyEvents));
+        renderSingleMonth();
+        closeModal();
+    }
+
+    // 삭제 기능
+    function deleteEvent() {
+        const idx = parseInt(document.getElementById('editIndex').value);
+        if (idx >= 0) {
+            if(confirm("이 일정을 삭제하시겠습니까?")) {
+                academyEvents.splice(idx, 1);
+                localStorage.setItem('safety_academy_events', JSON.stringify(academyEvents));
+                renderSingleMonth();
+                closeModal();
+            }
+        } else {
+            closeModal();
+        }
+    }
+
+    // 공유 주소 생성
+    function copyShareUrl() {
+        const jsonStr = JSON.stringify(academyEvents);
+        const encodedData = btoa(encodeURIComponent(jsonStr));
+        const shareUrl = `${window.location.origin}${window.location.pathname}?d=${encodedData}`;
+
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert("공유용 단독 URL이 복사되었습니다! 상대방도 로그인 없이 동일한 스케줄을 한 달씩 편리하게 조회할 수 있습니다.");
+        }).catch(err => {
+            alert("주소창의 전체 URL을 복사하여 전달해주시기 바랍니다.");
+        });
+    }
+
+    window.onload = () => {
+        initData();
+        renderSingleMonth();
+    };
+</script>
+</body>
+</html>
