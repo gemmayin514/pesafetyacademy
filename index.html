@@ -25,34 +25,35 @@
         header h1 { font-size: 2.6rem; font-weight: 900; color: var(--accent-color); margin-bottom: 10px; letter-spacing: -1px; }
         header p { font-size: 1.1rem; color: #666; font-weight: 500; }
         
-        /* ★ 안냥이 캐릭터가 빼꼼 고개를 내밀 수 있도록 툴바 구조 리뉴얼 */
+        /* 툴바 기본 여백 조정 */
         .toolbar { 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            margin-top: 80px; /* 안냥이가 들어갈 위쪽 공간 확보 */
+            margin-top: 40px; 
             margin-bottom: 25px; 
             background: var(--card-bg); 
             padding: 20px 30px; 
             border-radius: 14px; 
             box-shadow: 0 4px 15px rgba(92, 61, 46, 0.06); 
-            position: relative; /* 안냥이 배치의 기준점 */
+            position: relative; 
         }
-        .month-nav { display: flex; align-items: center; gap: 30px; }
-        .btn-nav { background-color: var(--accent-color); color: white; border: none; padding: 10px 25px; font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .month-nav { display: flex; align-items: center; gap: 30px; position: relative; width: 100%; justify-content: center; }
+        .btn-nav { background-color: var(--accent-color); color: white; border: none; padding: 10px 25px; font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; z-index: 2; }
         .btn-nav:hover { background-color: var(--primary-color); }
-        .current-month-display { font-size: 2.2rem; font-weight: 900; color: var(--primary-color); min-width: 160px; text-align: center; }
         
-        /* ★ 안냥이 캐릭터 디자인 요소를 툴바 상단에 결합 */
+        /* 글자가 가려지지 않도록 폰트 크기 및 정렬 다듬기 */
+        .current-month-display { font-size: 2.4rem; font-weight: 900; color: var(--primary-color); min-width: 160px; text-align: center; z-index: 2; }
+        
+        /* ★ 안냥이 위치 변경: 글자를 가리지 않도록 내비게이션 바 오른쪽 끝으로 배치 */
         .mascot-peeking {
             position: absolute;
-            top: -75px; /* 툴바 테두리 위로 빼꼼 올라가게 설정 */
-            left: 50%;
-            transform: translateX(-50%); /* 정확히 정중앙 정렬 */
-            width: 100px; /* 캐릭터 크기 (귀엽고 적당하게 조절 가능) */
+            bottom: -20px; /* 툴바 하단에 걸치도록 조절 */
+            right: 40px;   /* 오른쪽 끝 레이아웃 설정 */
+            width: 120px;  /* 귀엽게 포인트가 되도록 크기 유지 */
             height: auto;
-            z-index: 10; /* 달력보다 앞에 보이게 */
-            pointer-events: none; /* 마우스 클릭 방해 안 받게 */
+            z-index: 10; 
+            pointer-events: none; 
         }
 
         .single-calendar-container { background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 8px 24px rgba(92, 61, 46, 0.08); border: 1px solid var(--border-color); }
@@ -81,18 +82,17 @@
     </header>
     
     <div class="toolbar">
-        <!-- ★ 안냥이 이미지 파일이 들어가는 태그 (파일명은 annyang.png로 고정해두었습니다) -->
-        <img src="annyang.png" alt="안냥이" class="mascot-peeking">
-        
         <div class="month-nav">
             <button class="btn-nav" onclick="changeMonth(-1)">◀ 이전 달</button>
             <div class="current-month-display" id="currentMonthTxt">3월</div>
             <button class="btn-nav" onclick="changeMonth(1)">다음 달 ▶</button>
         </div>
+        
+        <img src="annyang.png" alt="안냥이" class="mascot-peeking">
     </div>
     
     <div class="single-calendar-container">
-        <div id="loading" class="loading-txt">🔄 최신 일정을 실시간 동기화하는 중...</div>
+        <div id="loading" class="loading-txt">🔄 schedule.txt 파일에서 최신 안전 일정을 실시간 동기화하는 중...</div>
         <div class="days-grid" id="calendarDaysGrid" style="display:none;"></div>
     </div>
 </div>
@@ -142,22 +142,18 @@
         }
     }
 
-    function getEventsForDate(dateStr) {
-        return academyEvents.filter(ev => dateStr >= ev.start && dateStr <= ev.end);
-    }
-
+    // [이하 기존 일정 렌더링 로직 동일]
+    function getEventsForDate(dateStr) { return academyEvents.filter(ev => dateStr >= ev.start && dateStr <= ev.end); }
     function changeMonth(direction) {
         currentRenderMonth += direction;
         if (currentRenderMonth < 1) currentRenderMonth = 12;
         if (currentRenderMonth > 12) currentRenderMonth = 1;
         renderSingleMonth();
     }
-
     function renderSingleMonth() {
         document.getElementById('currentMonthTxt').innerText = `${currentRenderMonth}월`;
         const grid = document.getElementById('calendarDaysGrid');
         grid.innerHTML = '';
-
         const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
         weekdays.forEach(wd => {
             const wdDiv = document.createElement('div');
@@ -165,33 +161,26 @@
             wdDiv.innerText = wd;
             grid.appendChild(wdDiv);
         });
-
         const firstDay = new Date(currentRenderYear, currentRenderMonth - 1, 1).getDay();
         const totalDays = new Date(currentRenderYear, currentRenderMonth, 0).getDate();
-
         for (let i = 0; i < firstDay; i++) {
             const emptyCell = document.createElement('div');
             emptyCell.className = 'day-cell empty';
             grid.appendChild(emptyCell);
         }
-
         for (let day = 1; day <= totalDays; day++) {
             const cell = document.createElement('div');
             cell.className = 'day-cell';
-            
             const headerRow = document.createElement('div');
             headerRow.className = 'day-header-row';
-
             const dayNum = document.createElement('div');
             dayNum.className = 'day-number';
             dayNum.innerText = day;
             headerRow.appendChild(dayNum);
-
             const mm = String(currentRenderMonth).padStart(2, '0');
             const dd = String(day).padStart(2, '0');
             const fullDateStr = `${currentRenderYear}-${mm}-${dd}`;
             const mdStr = `${mm}-${dd}`;
-
             if (holidays2026[mdStr]) {
                 cell.classList.add('holiday');
                 const hlName = document.createElement('div');
@@ -200,10 +189,8 @@
                 headerRow.appendChild(hlName);
             }
             cell.appendChild(headerRow);
-
             const eventsContainer = document.createElement('div');
             eventsContainer.className = 'day-events-container';
-
             const dayEvents = getEventsForDate(fullDateStr);
             dayEvents.forEach(ev => {
                 const evBox = document.createElement('div');
@@ -219,7 +206,6 @@
             grid.appendChild(cell);
         }
     }
-
     window.onload = () => { fetchTxtData(); };
 </script>
 </body>
