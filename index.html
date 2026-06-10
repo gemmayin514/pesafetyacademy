@@ -270,6 +270,15 @@
         "09-24": "추석 연휴", "09-25": "추석", "09-26": "추석 연휴", "10-03": "개천절", "10-05": "대체공휴일", "10-09": "한글날", "12-25": "크리스마스"
     };
 
+    // 🌟 초록색으로 표시될 전사 행사 및 기념일 목록 (콤마에러 완벽 수정 완료!)
+    const companyEvents2026 = {
+        "06-15": "(이앤씨/행사)민간인증 공단심사", "06-23": "(이앤씨/출장)S/Partner", "06-24": "(이앤씨/출장)S/Partner", 
+        "06-26": "(이앤씨/휴일)권장휴가일", "06-29": "(이앤씨/휴일)그룹사 노사창립일",
+        "06-30": "(이앤씨/출장)S/Partner", "07-01": "(이앤씨/출장)S/Partner",
+        "07-16": "(이앤씨/휴일)권장휴가일", "08-14": "(이앤씨/휴일)권장휴가일", "09-23": "(이앤씨/휴일)권장휴가일", "09-28": "(이앤씨/휴일)권장휴가일",
+        "11-06": "(이앤씨/휴일)권장휴가일", "11-20": "(이앤씨/휴일)권장휴가일", "12-24": "(이앤씨/휴일)권장휴가일"
+    };
+
     function initData() {
         window.liveEvents = JSON.parse(JSON.stringify(academyEvents));
         localStorage.setItem('posco_academy_schedules', JSON.stringify(window.liveEvents));
@@ -337,6 +346,21 @@
                 hlName.innerText = holidays2026[mdStr];
                 headerRow.appendChild(hlName);
             }
+            
+            // 🌟 오늘 날짜에 초록색 행사 일정이 있다면 날짜 옆에 조그맣게 띄웁니다.
+            if (companyEvents2026[mdStr]) {
+                const ceName = document.createElement('div');
+                ceName.style.fontSize = '0.75rem';
+                ceName.style.fontWeight = '700';
+                ceName.style.color = '#2E7D32'; 
+                ceName.style.backgroundColor = '#E8F5E9'; 
+                ceName.style.padding = '1px 5px';
+                ceName.style.borderRadius = '4px';
+                ceName.innerText = companyEvents2026[mdStr];
+                headerRow.appendChild(ceName);
+            }
+            
+            // 중복 렌더링 에러 청소 완료
             cell.appendChild(headerRow);
 
             const eventsContainer = document.createElement('div');
