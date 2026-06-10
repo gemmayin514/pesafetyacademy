@@ -6,7 +6,7 @@
     <title>포스코이앤씨 Safety Academy</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #BFDAF7;   
@@ -106,7 +106,7 @@
         
         <div class="month-nav">
             <button class="btn-nav" onclick="changeMonth(-1)">◀ 이전 달</button>
-            <div class="current-month-display" id="currentMonthTxt">5월</div>
+            <div class="current-month-display" id="currentMonthTxt">6월</div>
             <button class="btn-nav" onclick="changeMonth(1)">다음 달 ▶</button>
         </div>
         <div style="width:170px;"></div> 
@@ -155,7 +155,6 @@
     </div>
 </div>
 
-// ⭐ 여기부터 덮어쓰기 시작 ------------------------------------------
 <script>
     // 접속한 날짜(오늘)의 월을 자동으로 계산하여 첫 화면에 띄웁니다.
     const todayDate = new Date();
@@ -265,9 +264,6 @@
     ];
 
     const holidays2026 = {
-// ⭐ 여기까지 덮어쓰기 끝 --------------------------------------------
-        
-    const holidays2026 = {
         "01-01": "신정", "02-16": "설날 연휴", "02-17": "설날", "02-18": "설날 연휴", "03-01": "삼일절", "03-02": "대체공휴일",
         "05-05": "어린이날", "05-24": "석가탄신일", "05-25": "대체공휴일", "06-06": "현충일", "08-15": "광복절", "08-17": "대체공휴일",
         "09-24": "추석 연휴", "09-25": "추석", "09-26": "추석 연휴", "10-03": "개천절", "10-05": "대체공휴일", "10-09": "한글날", "12-25": "크리스마스"
@@ -355,7 +351,6 @@
                     <div class="info-text">📍 장소: ${ev.loc || '미정'}</div>
                 `;
                 
-                // 개별 배지(카드) 클릭 시 해당 교육만 팝업 연동 수정 완료
                 evBox.onclick = (e) => {
                     e.stopPropagation(); 
                     openDetails(fullDateStr, [ev]); 
