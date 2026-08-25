@@ -9,13 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #BFDAF7;   
-            --bg-color: #FFF8F0;        
-            --accent-color: #5C3D2E;    
+            --primary-color: #BFDAF7;
+            --bg-color: #FFF8F0;
+            --accent-color: #5C3D2E;
             --card-bg: #FFFFFF;
             --text-color: #222222;
             --border-color: #EADBC8;
-            --weekend-color: #FF0000;   
+            --weekend-color: #FF0000;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; }
@@ -163,18 +163,16 @@
         <textarea id="exportArea" readonly></textarea>
         <div class="form-actions">
             <button class="btn btn-cancel" onclick="closeExportModal()">닫기</button>
-            <button class="btn btn-save" style="background:#4A90E2;" onclick="copyExportCode()">📋 소스코드가 복사되었습니다</button>
+            <button class="btn btn-save" style="background:#4A90E2;" onclick="copyExportCode()">📋 소스코드 복사</button>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. 접속한 오늘 날짜를 기준으로 월을 자동 계산합니다.
     const todayDate = new Date();
     let currentRenderMonth = todayDate.getMonth() + 1; 
     const currentRenderYear = 2026;
     
-    // 2. 최신 연간 교육 일정표 데이터
     const academyEvents = [
         {name:"관리감독자", start:"2026-03-04", end:"2026-03-05", target:"AS섹션 맞춤", degree:"1차", loc:"CC 204호"},
         {name:"관리감독자", start:"2026-03-11", end:"2026-03-12", target:"AS섹션 맞춤", degree:"2차", loc:"CC 201호"},
@@ -276,14 +274,12 @@
         {name:"관리감독자", start:"2026-12-10", end:"2026-12-11", target:"CAE&기타", degree:"32차", loc:"LC"}
     ];
 
-    // 3. 대한민국 공휴일 목록
     const holidays2026 = {
         "01-01": "신정", "02-16": "설날 연휴", "02-17": "설날", "02-18": "설날 연휴", "03-01": "삼일절", "03-02": "대체공휴일",
         "05-05": "어린이날", "05-24": "부처님오신날", "05-25": "대체공휴일", "06-06": "현충일", "07-17": "제헌절", "08-15": "광복절", "08-17": "대체공휴일",
         "09-24": "추석 연휴", "09-25": "추석", "09-26": "추석 연휴", "10-03": "개천절", "10-05": "대체공휴일", "10-09": "한글날", "12-25": "크리스마스"
     };
 
-    // 4. 초록색으로 표시될 전사 행사 및 기념일 목록 (동일 날짜 중복 완벽 지원)
     const companyEvents2026 = {
         "06-12": ["(진흥원/출장)위례PGC미팅"], 
         "06-15": ["(이앤씨/행사)민간인증 공단심사"], 
